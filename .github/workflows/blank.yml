@@ -14,6 +14,15 @@ jobs:
           timeZone: 9
           format: 'YYYY-MM-DD HH-mm'
 
+      - name: get version
+        id: version
+        uses: notiz-dev/github-action-json-property@release
+        with: 
+          path: 'deploy-version.json'
+          prop_path: 'versionName'
+        
+      - run: echo ${{steps.version.outputs.prop}} 
+        
       - name: Create app json
         id: create-json
         uses: jsdaniell/create-json@1.1.2
