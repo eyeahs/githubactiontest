@@ -14,16 +14,25 @@ jobs:
           timeZone: 9
           format: 'YYYY-MM-DD HH-mm'
 
-    - name: Create app json
+      - name: Create app json
         id: create-json
         uses: jsdaniell/create-json@1.1.2
         env:
           TIME: "${{ steps.time.outputs.time }}"
         with:
-          name: "credentials.json"
-          json: '{"appName": "shucle-driver-develop-daily-2021-01-19.apk", "version": "0.9.0.1", "updateDate": "TIME"}'
+          name: "metadata.json"
+          json: '{"appName": "shucle-driver-develop-daily-2021-01-19.apk", "version": "0.9.0.1", "updateDate": $TIME}'
     
-    - name: Usage
+      - name: Read package.json
+        id: package
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./metadata.json
+    
+      - name: Echo package.json
+        run: echo ${{ steps.package.outputs.content }}
+    
+      - name: Usage
         env:
           TIME: "${{ steps.time.outputs.time }}"
         run: |
