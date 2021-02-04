@@ -11,30 +11,37 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: main
-          
-      - name: Get Time
-        id: time
+
+      - name: Get Date
+        id: date
+        uses: nanzm/get-time-action@v1.1
+        with:
+          timeZone: 9
+          format: 'YYYY-MM-DD'
+      - run: echo ${{steps.date.outputs.time}}
+
+      - name: Get DateTime
+        id: datetime
         uses: nanzm/get-time-action@v1.1
         with:
           timeZone: 9
           format: 'YYYY-MM-DD HH:mm'
+      - run: echo ${{steps.datetime.outputs.time}}
 
-      - name: get version
+      - name: Get Version
         id: version
         uses: notiz-dev/github-action-json-property@release
         with: 
           path: './deploy-version.json'
           prop_path: 'versionName'
       - run: echo ${{steps.version.outputs.prop}} 
-        
-      - name: Create app json
+
+      - name: Create Metadata json
         id: create-json
         uses: jsdaniell/create-json@1.1.2
-        env:
-          TIME: "${{ steps.time.outputs.time }}"
         with:
           name: "metadata.json"
-          json: '{"appName": "shucle-driver-develop-daily-2021-01-19.apk", "version": "0.9.0.1", "updateDate": "${{ steps.time.outputs.time }}"'
+          json: '{"appName": "shucle-driver-${{ steps.date.outputs.time }}.apk", "version": "${{ steps.version.outputs.prop }}", "updateDate": "${{ steps.datetime.outputs.time }}"'
     
       - name: Read package.json
         id: package
@@ -42,9 +49,3 @@ jobs:
         with:
           path: ./metadata.json
       - run: echo ${{ steps.package.outputs.content }}
-    
-      - name: Usage
-        env:
-          TIME: "${{ steps.time.outputs.time }}"
-        run: |
-          echo $TIME
